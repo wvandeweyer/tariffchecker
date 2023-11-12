@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,4 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', TestController::class);
+Route::get('/', function () {
+    return 'hello world';
+});

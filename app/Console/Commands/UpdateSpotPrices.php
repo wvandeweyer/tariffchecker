@@ -32,7 +32,7 @@ class UpdateSpotPrices extends Command
      */
     public function handle(): int
     {
-        $response = Http::get($this->eliaUrl . $this->argument('date'));
+        $response = Http::get($this->eliaUrl.$this->argument('date'));
 
         // Assuming the response is JSON and not XML as your comment suggests
         $spotPriceData = json_decode($response->body(), true);
@@ -47,33 +47,30 @@ class UpdateSpotPrices extends Command
         );
 
         $this->info("Spot prices updated successfully for date: {$this->argument('date')}");
+
         return Command::SUCCESS;
     }
 
     private function transformData(Collection $spotPriceData): array
     {
         $validatedData = $spotPriceData->map(function ($item) {
-            // Convert dateTime from Europe/Brussels to UTC and price to euro cents
-            $dateTime = Carbon::createFromFormat('Y-m-d\TH:i:s\Z', $item['dateTime'], 'Europe/Brussels')
-                ->setTimezone('UTC')
-                ->toIso8601String();
-
-            $priceInCents = (int)($item['price'] * 100);
+            $priceInCents = (int) ($item['price'] * 100);
 
             return [
-                'timestamp' => $dateTime,
+                'timestamp' => Carbon::parse($item['dateTime']),
                 'price_in_eurocent' => $priceInCents,
             ];
         })->toArray();
 
         // Perform validation on the transformed data
         $validator = Validator::make($validatedData, [
-            "*.timestamp" => "required|date",
-            "*.price_in_eurocent" => "required|integer",
+            '*.timestamp' => 'required|date',
+            '*.price_in_eurocent' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
             $this->error('The spot prices update has failed.');
+
             return Command::FAILURE;
         }
 

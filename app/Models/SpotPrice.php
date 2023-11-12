@@ -10,13 +10,12 @@ class SpotPrice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date_time',
+        'timestamp',
         'price_in_eurocent',
     ];
 
     protected $casts = [
-        'date_time' => 'datetime',
+        'timestamp' => 'datetime',
         'price_in_eurocent' => 'integer',
     ];
-
 }
